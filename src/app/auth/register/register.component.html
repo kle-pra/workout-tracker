@@ -1,30 +1,32 @@
-<section>
-  <form novalidate #registerForm="ngForm" fxLayout="column" fxLayoutAlign="space-around center">
+<section class="signup-form">
+  <form novalidate #registerForm="ngForm" fxLayout="column" fxLayoutAlign="center center" fxLayoutGap="12px" (ngSubmit)="onRegisterSubmit(registerForm)">
     <mat-form-field>
-      <input type="email" matInput ngModel placeholder="Email" name="email" required>
+      <input type="email" matInput ngModel placeholder="Email" name="email" required email #emailInput="ngModel">
       <mat-hint>Please enter an email</mat-hint>
-      <mat-error *ngIf="registerForm.hasError('email') && !emailFormControl.hasError('required')">
+      <mat-error *ngIf="emailInput.hasError('required')">
         Please enter a valid email address
       </mat-error>
-      <mat-error *ngIf="registerForm.hasError('required')">
-        Email is <strong>required</strong>
+      <mat-error *ngIf="!emailInput.hasError('required') && emailInput.hasError('email')">
+        Email is <strong>invalid</strong>
       </mat-error>
     </mat-form-field>
 
-    <mat-form-field>
-      <input type="passwor" matInput ngModel placeholder="Password" name="password" required>
-      <mat-hint>Please enter a password of at least 6 characters</mat-hint>
-      <mat-error *ngIf="registerForm.hasError('password')">
-        Password not valid
-      </mat-error>
+    <mat-form-field hintLabel="Should be at least 6 characters long">
+      <input type="password" matInput ngModel placeholder="Pour password" name="password" required #passwordInput="ngModel"
+        minlength="6">
+      <mat-hint align="end">{{passwordInput.value?.length}} / 6</mat-hint>
+      <mat-error *ngIf="passwordInput.hasError('required')">
+        Please enter a password </mat-error>
     </mat-form-field>
-    <mat-form-field>
 
-      <input matInput [matDatepicker]="picker" placeholder="Birthdate">
+    <mat-form-field>
+      <input ngModel name="birthdate" required matInput [matDatepicker]="picker" placeholder="Birthdate" [max]="maxDate">
       <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
       <mat-datepicker #picker></mat-datepicker>
     </mat-form-field>
-    <mat-checkbox>I agree to terms of use</mat-checkbox>
-
+    <mat-checkbox ngModel required name="agreeCheckbox" #agreement="ngModel" color="primary"> I agree to Terms and
+      Conditions</mat-checkbox>
+    <!-- <div *ngIf="!agreement.value">Must agree</div> -->
+    <button type="submit" mat-raised-button color="primary" [disabled]="registerForm.invalid">Submit</button>
   </form>
 </section>
