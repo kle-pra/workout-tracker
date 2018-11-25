@@ -6,3 +6,18 @@ mat-sidenav-container, mat-sidenav, mat-sidenav-content {
 mat-sidenav {
   width: 250px
 }
+
+a{
+  color:white;
+  text-decoration: none;
+}
+
+a:hover, a:active {
+  color:lightgray
+}
+
+.items {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
