@@ -1,4 +1,7 @@
+import { AuthService } from './../../services/auth.service';
 import { Component, OnInit, EventEmitter, Output } from '@angular/core';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 
 @Component({
   selector: 'app-sidenav-list',
@@ -9,11 +12,33 @@ export class SidenavListComponent implements OnInit {
 
   @Output() sidenavToggle = new EventEmitter<void>();
 
-  constructor() { }
+  isAuth = false;
+  onDestroy$ = new Subject();
 
-  ngOnInit() { }
+  constructor(private authService: AuthService) { }
 
-  toggleSidenav() {
+  ngOnInit() {
+    this.authService
+      .authChange
+      .asObservable()
+      .pipe(takeUntil(this.onDestroy$))
+      .subscribe(isLoggedIn => {
+        this.isAuth = isLoggedIn;
+      });
+  }
+
+  ngOnDestroy(): void {
+    this.onDestroy$.next();
+    this.onDestroy$.unsubscribe();
+  }
+
+
+  onLogout() {
+    this.toggleSidenav();
+    this.authService.logout();
+  }
+
+  private toggleSidenav() {
     this.sidenavToggle.emit();
   }
 }

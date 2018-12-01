@@ -1,3 +1,4 @@
+import { AuthService } from './../../services/auth.service';
 import { Component, OnInit } from '@angular/core';
 import { NgForm } from '@angular/forms';
 
@@ -8,18 +9,20 @@ import { NgForm } from '@angular/forms';
 })
 export class RegisterComponent implements OnInit {
 
-  maxDate;
-  constructor() { }
+  maxDate = new Date();
+
+  constructor(private authService: AuthService) { }
 
   ngOnInit() {
-
     //must be 18 years old so set max possible picker date to today - 18 years:
-    this.maxDate = new Date();
     this.maxDate.setFullYear(this.maxDate.getFullYear() - 18);
   }
 
   onRegisterSubmit(form: NgForm) {
-    console.log(form.value);
+    this.authService.registerUser({
+      email: form.value.email,
+      password: form.value.password
+    });
   }
 
 }

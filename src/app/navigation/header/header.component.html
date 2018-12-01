@@ -10,10 +10,10 @@
   <span class="example-spacer"></span>
   <div fxFlex fxLayout="row" fxLayoutAlign="flex-end" fxHide.xs>
     <ul fxLayout="row" fxLayoutGap="10px" class="items">
-      <li><a [routerLink]="['workout']">Workout</a></li>
-      <li><a [routerLink]="['login']">Login</a></li>
-      <li><a [routerLink]="['register']">Register</a></li>
-      <li><a [routerLink]="['/']">Logout</a></li>
+      <li *ngIf="isAuth"><a [routerLink]="['workout']">Workout</a></li>
+      <li *ngIf="!isAuth"><a [routerLink]="['login']">Login</a></li>
+      <li *ngIf="!isAuth"><a [routerLink]="['register']">Register</a></li>
+      <li *ngIf="isAuth"><a [routerLink]="['/']" (click)="onLogout()">Logout</a></li>
     </ul>
   </div>
 </mat-toolbar>
