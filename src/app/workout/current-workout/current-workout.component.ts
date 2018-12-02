@@ -11,7 +11,7 @@ import { StopWorkoutDialogComponent } from './stop-workout-dialog/stop-workout-d
 })
 export class CurrentWorkoutComponent implements OnInit {
 
-  progress = 5;
+  progress = 0;
   timer;
   currentExercise: Exercise;
 
