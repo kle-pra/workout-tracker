@@ -1,3 +1,4 @@
+import { environment } from './../environments/environment';
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
@@ -17,6 +18,10 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { HeaderComponent } from './navigation/header/header.component';
 import { SidenavListComponent } from './navigation/sidenav-list/sidenav-list.component';
 import { StopWorkoutDialogComponent } from './workout/current-workout/stop-workout-dialog/stop-workout-dialog.component';
+import { AngularFireModule } from '@angular/fire';
+import { AngularFirestoreModule } from '@angular/fire/firestore';
+import { AngularFireAuthModule } from '@angular/fire/auth';
+
 
 @NgModule({
   declarations: [
@@ -39,7 +44,10 @@ import { StopWorkoutDialogComponent } from './workout/current-workout/stop-worko
     AppRoutingModule,
     FormsModule,
     ReactiveFormsModule,
-    FlexLayoutModule
+    FlexLayoutModule,
+    AngularFireModule.initializeApp(environment.config),
+    AngularFirestoreModule,
+    AngularFireAuthModule,
   ],
   providers: [],
   bootstrap: [AppComponent],
