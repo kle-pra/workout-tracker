@@ -1,9 +1,13 @@
 <mat-tab-group *ngIf="!isWorkoutActive">
   <mat-tab label="New workout">
-    <app-new-workout (startWorkout)="isWorkoutActive = true"></app-new-workout>
+    <ng-template matTabContent>
+      <app-new-workout (startWorkout)="isWorkoutActive = true"></app-new-workout>
+    </ng-template>
   </mat-tab>
   <mat-tab label="History">
-    <app-history></app-history>
+    <ng-template matTabContent>
+      <app-history></app-history>
+    </ng-template>
   </mat-tab>
 </mat-tab-group>
 <app-current-workout *ngIf="isWorkoutActive"></app-current-workout>

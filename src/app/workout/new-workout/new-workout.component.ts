@@ -20,10 +20,13 @@ export class NewWorkoutComponent implements OnInit {
     private db: AngularFirestore) { }
 
   ngOnInit() {
-    this.exercises = this.workoutService.getExercises();
-    this.workoutService.exerciseChangedEvent.asObservable().subscribe(() => {
-      this.exercises = this.workoutService.getExercises();
-    });
+    this.exercises = this.workoutService.getAvailableExercises();
+    this.workoutService
+      .availableExercisesChangedEvent
+      .asObservable()
+      .subscribe(() => {
+        this.exercises = this.workoutService.getAvailableExercises();
+      });
   }
 
   onStartWorkout(form: NgForm) {

@@ -10,28 +10,21 @@ import { map } from 'rxjs/operators';
 export class WorkoutService {
 
   exerciseChangedEvent = new Subject<Exercise>();
-  private exercisesChanged = new Subject();
+  availableExercisesChangedEvent = new Subject();
+  availableExercises: Exercise[] = [];
+  private currentExercise: Exercise = undefined;
 
   constructor(private db: AngularFirestore) {
-    this.getExercisesFs()
+    this.fetchExercises()
       .subscribe((exercises: Exercise[]) => {
         console.log(exercises);
         this.availableExercises = exercises;
-        this.exerciseChangedEvent.next();
+        this.availableExercisesChangedEvent.next();
       });
   }
 
-  availableExercises: Exercise[] = [];
 
-  exercises: Exercise[] = [];
-
-  private currentExercise: Exercise;
-
-  getExercises(): Exercise[] {
-    return this.availableExercises.slice();
-  }
-
-  getExercisesFs(): Observable<Exercise[]> {
+  fetchExercises(): Observable<Exercise[]> {
     return this.db
       .collection('availableExercises')
       .snapshotChanges()
@@ -46,35 +39,59 @@ export class WorkoutService {
         }));
   }
 
+  getAvailableExercises(): Exercise[] {
+    return this.availableExercises.slice();
+  }
+
+  getCurrentExercise() {
+    return !this.currentExercise ? this.currentExercise : { ...this.currentExercise };
+  }
+
   startExercise(selectedExerciseId: string) {
     this.currentExercise = this.availableExercises.find(exercise => selectedExerciseId === exercise.id);
     this.exerciseChangedEvent.next({ ...this.currentExercise });
+
+    // example of updating a single exercise (doc)
+    this.db.doc('availableExercises/' + selectedExerciseId)
+      .update({
+        lastSelected: new Date()
+      });
   }
 
   cancelExercise(progress: number) {
-    this.exercises.push({
+    const exercise: Exercise = {
       ... this.currentExercise,
       duration: this.currentExercise.duration * (progress / 100),
       calories: this.currentExercise.calories * (progress / 100),
       state: 'canceled',
       date: new Date()
-    });
+    };
+
+    this.saveExerciseHistory(exercise);
     this.currentExercise = undefined;
     this.exerciseChangedEvent.next(null);
-
   }
 
   completeExercise() {
-    this.exercises.push({
+    const exercise: Exercise = {
       ... this.currentExercise,
       state: 'completed',
       date: new Date()
-    });
+    };
+
+    this.saveExerciseHistory(exercise);
     this.currentExercise = undefined;
     this.exerciseChangedEvent.next(null);
   }
 
-  getCurrentExercise() {
-    return { ...this.currentExercise };
+  fetchHistoryExercises(): Observable<Exercise[]> {
+    return <Observable<Exercise[]>>this.db
+      .collection('exercises')
+      .valueChanges();
   }
+
+  private saveExerciseHistory(exercise: Exercise) {
+    this.db.collection('exercises').add(exercise);
+  }
+
 }
