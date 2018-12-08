@@ -16,11 +16,15 @@ export class WorkoutService {
 
   constructor(private db: AngularFirestore) {
     this.fetchExercises()
-      .subscribe((exercises: Exercise[]) => {
-        console.log(exercises);
-        this.availableExercises = exercises;
-        this.availableExercisesChangedEvent.next();
-      });
+      .subscribe(
+        (exercises: Exercise[]) => {
+          console.log(exercises);
+          this.availableExercises = exercises;
+          this.availableExercisesChangedEvent.next();
+        },
+        error => {
+          console.log(error);
+        });
   }
 
 
