@@ -27,6 +27,7 @@
     <mat-checkbox ngModel required name="agreeCheckbox" #agreement="ngModel" color="primary"> I agree to Terms and
       Conditions</mat-checkbox>
     <!-- <div *ngIf="!agreement.value">Must agree</div> -->
-    <button type="submit" mat-raised-button color="primary" [disabled]="registerForm.invalid">Submit</button>
+    <button *ngIf="!isLoading" type="submit" mat-raised-button color="primary" [disabled]="registerForm.invalid">Submit</button>
+    <mat-spinner *ngIf="isLoading"></mat-spinner>
   </form>
 </section>

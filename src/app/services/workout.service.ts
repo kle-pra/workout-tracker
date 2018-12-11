@@ -1,3 +1,4 @@
+import { UiService } from './ui.service';
 import { Injectable } from '@angular/core';
 import { Exercise } from '../models/exercise.model';
 import { Subject, Observable } from 'rxjs';
@@ -14,13 +15,15 @@ export class WorkoutService {
   availableExercises: Exercise[] = [];
   private currentExercise: Exercise = undefined;
 
-  constructor(private db: AngularFirestore) {
+  constructor(
+    private db: AngularFirestore,
+    private uiService: UiService) {
     this.fetchExercises()
       .subscribe(
         (exercises: Exercise[]) => {
-          console.log(exercises);
           this.availableExercises = exercises;
           this.availableExercisesChangedEvent.next();
+          this.uiService.progressLoadingEvent.next(false);
         },
         error => {
           console.log(error);
@@ -29,11 +32,14 @@ export class WorkoutService {
 
 
   fetchExercises(): Observable<Exercise[]> {
+
     return this.db
       .collection('availableExercises')
       .snapshotChanges()
       .pipe(
         map(documentArray => {
+          this.uiService.progressLoadingEvent.next(true);
+
           return documentArray.map((document: any) => ({
             id: document.payload.doc.id,
             duration: document.payload.doc.data().duration,
