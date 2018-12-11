@@ -12,24 +12,28 @@ export class WorkoutService {
 
   exerciseChangedEvent = new Subject<Exercise>();
   availableExercisesChangedEvent = new Subject();
-  availableExercises: Exercise[] = [];
+  availableExercises: Exercise[] = null;
   private currentExercise: Exercise = undefined;
 
   constructor(
     private db: AngularFirestore,
     private uiService: UiService) {
-    this.fetchExercises()
-      .subscribe(
-        (exercises: Exercise[]) => {
-          this.availableExercises = exercises;
-          this.availableExercisesChangedEvent.next();
-          this.uiService.progressLoadingEvent.next(false);
-        },
-        error => {
-          console.log(error);
-        });
+    this.loadAvailableExercises();
   }
 
+  private loadAvailableExercises() {
+    this.fetchExercises()
+      .subscribe((exercises: Exercise[]) => {
+        this.availableExercises = exercises;
+        this.availableExercisesChangedEvent.next();
+        this.uiService.progressLoadingEvent.next(false);
+      }, error => {
+        this.availableExercises = null;
+        this.availableExercisesChangedEvent.next();
+        this.uiService.progressLoadingEvent.next(false);
+        this.uiService.showSnackbar("Fetching exercises failed, please try again later", null, 5000);
+      });
+  }
 
   fetchExercises(): Observable<Exercise[]> {
 
@@ -39,18 +43,18 @@ export class WorkoutService {
       .pipe(
         map(documentArray => {
           this.uiService.progressLoadingEvent.next(true);
-
           return documentArray.map((document: any) => ({
             id: document.payload.doc.id,
             duration: document.payload.doc.data().duration,
             name: document.payload.doc.data().name,
             calories: document.payload.doc.data().calories
           }));
-        }));
+        })
+      );
   }
 
   getAvailableExercises(): Exercise[] {
-    return this.availableExercises.slice();
+    return this.availableExercises ? this.availableExercises.slice() : null;
   }
 
   getCurrentExercise() {

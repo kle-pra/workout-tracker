@@ -16,7 +16,7 @@ export class NewWorkoutComponent implements OnInit, OnDestroy {
 
   @Output() startWorkout = new EventEmitter();
   onDestroy$ = new Subject();
-  exercises: Exercise[] = [];
+  exercises: Exercise[] = null;
   isLoading = false;
 
   constructor(
@@ -47,5 +47,8 @@ export class NewWorkoutComponent implements OnInit, OnDestroy {
 
   onStartWorkout(form: NgForm) {
     this.workoutService.startExercise(form.value.exercise);
+  }
+  reload() {
+    this.exercises = this.workoutService.getAvailableExercises();
   }
 }
