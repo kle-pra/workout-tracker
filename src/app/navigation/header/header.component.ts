@@ -1,25 +1,22 @@
 import { AuthService } from './../../services/auth.service';
 import { Component, OnInit, Output, EventEmitter, OnDestroy } from '@angular/core';
 import { Subject } from 'rxjs';
-import { takeUntil } from "rxjs/operators";
+import { takeUntil } from 'rxjs/operators';
 
 @Component({
   selector: 'app-header',
   templateUrl: './header.component.html',
-  styleUrls: ['./header.component.css']
+  styleUrls: ['./header.component.css'],
 })
 export class HeaderComponent implements OnInit, OnDestroy {
-
   isAuth = false;
   onDestroy$ = new Subject();
   @Output() sidenavToggle = new EventEmitter<void>();
 
-  constructor(private authService: AuthService) { }
-
+  constructor(private authService: AuthService) {}
 
   ngOnInit() {
-    this.authService
-      .authChange
+    this.authService.authChange
       .asObservable()
       .pipe(takeUntil(this.onDestroy$))
       .subscribe(isLoggedIn => {

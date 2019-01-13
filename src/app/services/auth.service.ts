@@ -1,34 +1,29 @@
 import { UiService } from './ui.service';
 import { AuthData } from './../models/auth-data.model';
 import { Injectable } from '@angular/core';
-import { User } from '../models/user.model';
-import { Subject, throwError } from 'rxjs';
+import { Subject } from 'rxjs';
 import { Router } from '@angular/router';
 import { AngularFireAuth } from '@angular/fire/auth';
-import { MatSnackBar } from '@angular/material';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class AuthService {
-
-  private isAuthenticated: boolean = false;
+  private isAuthenticated = false;
   authChange = new Subject<boolean>();
 
-  constructor(private router: Router,
-    private fireAuth: AngularFireAuth,
-    private usService: UiService) {
+  constructor(private router: Router, private fireAuth: AngularFireAuth, private usService: UiService) {
     this.initAuthListener();
   }
 
   registerUser(authData: AuthData) {
     this.usService.progressLoadingEvent.next(true);
-    this.fireAuth
-      .auth
+    this.fireAuth.auth
       .createUserWithEmailAndPassword(authData.email, authData.password)
       .then(_data => {
         this.usService.progressLoadingEvent.next(false);
-      }).catch(err => {
+      })
+      .catch(err => {
         this.usService.progressLoadingEvent.next(false);
         this.usService.showSnackbar(err.message, null, 3000);
       });
@@ -36,12 +31,12 @@ export class AuthService {
 
   login(authData: AuthData) {
     this.usService.progressLoadingEvent.next(true);
-    this.fireAuth
-      .auth
+    this.fireAuth.auth
       .signInWithEmailAndPassword(authData.email, authData.password)
       .then(_data => {
         this.usService.progressLoadingEvent.next(false);
-      }).catch(err => {
+      })
+      .catch(err => {
         this.usService.progressLoadingEvent.next(false);
         this.usService.showSnackbar(err.message, null, 3000);
       });
@@ -64,13 +59,11 @@ export class AuthService {
           this.router.navigate(['login']);
         }
       },
-      _error => {
-      }
-    )
+      _error => {}
+    );
   }
 
   isAuth(): boolean {
     return this.isAuthenticated;
   }
-
 }

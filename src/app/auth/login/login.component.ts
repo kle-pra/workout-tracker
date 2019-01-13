@@ -2,32 +2,25 @@ import { UiService } from './../../services/ui.service';
 import { AuthService } from './../../services/auth.service';
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { FormGroup, FormControl, FormBuilder, Validators } from '@angular/forms';
-import { formArrayNameProvider } from '@angular/forms/src/directives/reactive_directives/form_group_name';
 import { takeUntil } from 'rxjs/operators';
 import { Subject } from 'rxjs';
 
 @Component({
   selector: 'app-login',
   templateUrl: './login.component.html',
-  styleUrls: ['./login.component.css']
+  styleUrls: ['./login.component.css'],
 })
 export class LoginComponent implements OnInit, OnDestroy {
-
   loginForm: FormGroup;
   isLoading = false;
   onDestroy$ = new Subject();
 
-  constructor(
-    private fb: FormBuilder,
-    private authService: AuthService,
-    private uiService: UiService) { }
+  constructor(private fb: FormBuilder, private authService: AuthService, private uiService: UiService) {}
 
   ngOnInit() {
-    this.uiService.progressLoadingEvent
-      .pipe(takeUntil(this.onDestroy$))
-      .subscribe(isLoading => {
-        this.isLoading = isLoading;
-      });
+    this.uiService.progressLoadingEvent.pipe(takeUntil(this.onDestroy$)).subscribe(isLoading => {
+      this.isLoading = isLoading;
+    });
 
     this.loginForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
@@ -43,7 +36,7 @@ export class LoginComponent implements OnInit, OnDestroy {
   onLoginFormSubmit() {
     this.authService.login({
       email: this.loginForm.value.email,
-      password: this.loginForm.value.password
+      password: this.loginForm.value.password,
     });
   }
 }

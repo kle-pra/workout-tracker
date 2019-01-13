@@ -8,28 +8,21 @@ import { takeUntil } from 'rxjs/operators';
 @Component({
   selector: 'app-register',
   templateUrl: './register.component.html',
-  styleUrls: ['./register.component.css']
+  styleUrls: ['./register.component.css'],
 })
 export class RegisterComponent implements OnInit, OnDestroy {
-
   maxDate = new Date();
   onDestroy$ = new Subject();
   isLoading = false;
 
-  constructor(
-    private authService: AuthService,
-    private uiService: UiService) { }
+  constructor(private authService: AuthService, private uiService: UiService) {}
 
   ngOnInit() {
+    this.uiService.progressLoadingEvent.pipe(takeUntil(this.onDestroy$)).subscribe(isLoading => {
+      this.isLoading = isLoading;
+    });
 
-    this.uiService.progressLoadingEvent
-      .pipe(takeUntil(this.onDestroy$))
-      .subscribe(isLoading => {
-        this.isLoading = isLoading;
-      });
-
-
-    //must be 18 years old so set max possible picker date to today - 18 years:
+    // must be 18 years old so set max possible picker date to today - 18 years:
     this.maxDate.setFullYear(this.maxDate.getFullYear() - 18);
   }
 
@@ -41,8 +34,7 @@ export class RegisterComponent implements OnInit, OnDestroy {
   onRegisterSubmit(form: NgForm) {
     this.authService.registerUser({
       email: form.value.email,
-      password: form.value.password
+      password: form.value.password,
     });
   }
-
 }

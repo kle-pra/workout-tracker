@@ -6,37 +6,35 @@ import { AngularFirestore } from '@angular/fire/firestore';
 import { map } from 'rxjs/operators';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class WorkoutService {
-
   exerciseChangedEvent = new Subject<Exercise>();
   availableExercisesChangedEvent = new Subject();
   availableExercises: Exercise[] = null;
   private currentExercise: Exercise = undefined;
 
-  constructor(
-    private db: AngularFirestore,
-    private uiService: UiService) {
+  constructor(private db: AngularFirestore, private uiService: UiService) {
     this.loadAvailableExercises();
   }
 
   private loadAvailableExercises() {
-    this.fetchExercises()
-      .subscribe((exercises: Exercise[]) => {
+    this.fetchExercises().subscribe(
+      (exercises: Exercise[]) => {
         this.availableExercises = exercises;
         this.availableExercisesChangedEvent.next();
         this.uiService.progressLoadingEvent.next(false);
-      }, error => {
+      },
+      error => {
         this.availableExercises = null;
         this.availableExercisesChangedEvent.next();
         this.uiService.progressLoadingEvent.next(false);
-        this.uiService.showSnackbar("Fetching exercises failed, please try again later", null, 5000);
-      });
+        this.uiService.showSnackbar('Fetching exercises failed, please try again later', null, 5000);
+      }
+    );
   }
 
   fetchExercises(): Observable<Exercise[]> {
-
     return this.db
       .collection('availableExercises')
       .snapshotChanges()
@@ -47,7 +45,7 @@ export class WorkoutService {
             id: document.payload.doc.id,
             duration: document.payload.doc.data().duration,
             name: document.payload.doc.data().name,
-            calories: document.payload.doc.data().calories
+            calories: document.payload.doc.data().calories,
           }));
         })
       );
@@ -66,19 +64,18 @@ export class WorkoutService {
     this.exerciseChangedEvent.next({ ...this.currentExercise });
 
     // example of updating a single exercise (doc)
-    this.db.doc('availableExercises/' + selectedExerciseId)
-      .update({
-        lastSelected: new Date()
-      });
+    this.db.doc('availableExercises/' + selectedExerciseId).update({
+      lastSelected: new Date(),
+    });
   }
 
   cancelExercise(progress: number) {
     const exercise: Exercise = {
-      ... this.currentExercise,
+      ...this.currentExercise,
       duration: this.currentExercise.duration * (progress / 100),
       calories: this.currentExercise.calories * (progress / 100),
       state: 'canceled',
-      date: new Date()
+      date: new Date(),
     };
 
     this.saveExerciseHistory(exercise);
@@ -88,9 +85,9 @@ export class WorkoutService {
 
   completeExercise() {
     const exercise: Exercise = {
-      ... this.currentExercise,
+      ...this.currentExercise,
       state: 'completed',
-      date: new Date()
+      date: new Date(),
     };
 
     this.saveExerciseHistory(exercise);
@@ -99,13 +96,10 @@ export class WorkoutService {
   }
 
   fetchHistoryExercises(): Observable<Exercise[]> {
-    return <Observable<Exercise[]>>this.db
-      .collection('exercises')
-      .valueChanges();
+    return <Observable<Exercise[]>>this.db.collection('exercises').valueChanges();
   }
 
   private saveExerciseHistory(exercise: Exercise) {
     this.db.collection('exercises').add(exercise);
   }
-
 }
